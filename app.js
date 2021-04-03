@@ -8,6 +8,7 @@ const { HttpCode } = require("./helpers/constants");
 const swaggerDocument = require("./swagger.json");
 
 const authRouter = require("./routes/auth/index");
+const userRouter = require("./routes/user/index");
 
 const app = express();
 
@@ -33,6 +34,7 @@ const apiLimiter = rateLimit({
 
 app.use("/api/", apiLimiter);
 app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res) => {

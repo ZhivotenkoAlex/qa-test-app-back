@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 const Users = require("../model/users");
 const { HttpCode } = require("../helpers/constants");
-const User = require("../model/schemas/user");
 
 require("dotenv").config();
 const SECRET_KEY = process.env.JWT_SECRET;
@@ -21,7 +20,7 @@ const register = async (req, res, next) => {
       });
     }
 
-    const newUser = await User.create(req.body);
+    const newUser = await Users.create(req.body);
 
     return res.status(HttpCode.CREATED).json({
       status: "success",
