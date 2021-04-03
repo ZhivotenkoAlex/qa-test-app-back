@@ -82,6 +82,27 @@
           }
         }
       }
+    },
+    "/api/user/info": {
+      "get": {
+        "tags": ["User"],
+        "description": "Information about current user",
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "description": "Information about user that logged in",
+            "schema": {}
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Current user information",
+            "schema": {}
+          }
+        }
+      }
     }
   }
 }

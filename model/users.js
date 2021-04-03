@@ -12,10 +12,6 @@ const findByToken = async (token) => {
   return await User.findOne({ token });
 };
 
-const findByTokenAndUpdate = async (token, body) => {
-  return await User.findOneAndUpdate({ token }, { ...body }, { new: true });
-};
-
 const create = async ({ name, email, password }) => {
   const user = new User({ name, email, password });
 
@@ -30,7 +26,6 @@ module.exports = {
   findByEmail,
   findByID,
   findByToken,
-  findByTokenAndUpdate,
   create,
   updateToken,
 };
