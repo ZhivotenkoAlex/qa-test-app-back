@@ -3,7 +3,11 @@ const helmet = require("helmet");
 const logger = require("morgan");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const swaggerUi = require("swagger-ui-express");
 const { HttpCode } = require("./helpers/constants");
+const swaggerDocument = require("./swagger.json");
+
+const authRouter = require("./routes/auth/index");
 
 const app = express();
 
@@ -28,6 +32,8 @@ const apiLimiter = rateLimit({
 });
 
 app.use("/api/", apiLimiter);
+app.use("/api/auth", authRouter);
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res) => {
   res.status(HttpCode.NOT_FOUND).json({
