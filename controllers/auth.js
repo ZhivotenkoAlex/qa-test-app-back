@@ -22,10 +22,19 @@ const register = async (req, res, next) => {
 
     const newUser = await Users.create(req.body);
 
+    const id = newUser._id;
+
+    const payload = { id };
+
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "2h" });
+
+    await Users.updateToken(id, token);
+
     return res.status(HttpCode.CREATED).json({
       status: "success",
       code: HttpCode.CREATED,
       data: {
+        token,
         user: {
           name: newUser.name,
           email: newUser.email,
