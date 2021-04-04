@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { listQuestionsTech } = require("../../model/questions");
+const { listQuestionsTheory } = require("../../model/questions");
 
 const getRandomIntInclusive = (min, max) => {
   min = Math.ceil(min);
@@ -10,7 +10,7 @@ const getRandomIntInclusive = (min, max) => {
 
 router.get("/", async (_req, res, next) => {
   try {
-    const list = await listQuestionsTech();
+    const list = await listQuestionsTheory();
     const arrInt = [];
     const newList = [];
     while (arrInt.length < 12) {
@@ -35,7 +35,7 @@ router.get("/", async (_req, res, next) => {
 router.post("/", async (req, res, next) => {
   try {
     let rightAnswer = 0;
-    const list = await listQuestionsTech();
+    const list = await listQuestionsTheory();
     const answers = req.body;
     // eslint-disable-next-line array-callback-return
     answers.map((objAns) => {

@@ -10,5 +10,5 @@ const questionSchema = new Schema(
   { versionKey: false, timestamps: true }
 );
 
-const QuestionSchema = model("qa-teches", questionSchema);
-module.exports = QuestionSchema;
+const QuestionTheorySchema = model("qa-theory", questionSchema);
+module.exports = QuestionTheorySchema;

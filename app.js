@@ -9,6 +9,8 @@ const swaggerDocument = require("./swagger.json");
 
 const authRouter = require("./routes/auth/index");
 const userRouter = require("./routes/user/index");
+const testTechRouter = require("./routes/test-tech/index");
+const testTheoryRouter = require("./routes/test-theory/index");
 
 const app = express();
 
@@ -36,6 +38,8 @@ app.use("/api/", apiLimiter);
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/api/test-tech", testTechRouter);
+app.use("/api/test-theory", testTheoryRouter);
 
 app.use((req, res) => {
   res.status(HttpCode.NOT_FOUND).json({
