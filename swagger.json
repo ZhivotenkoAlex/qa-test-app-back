@@ -307,7 +307,62 @@
           }
         }
       }
+    },
+    "/test-tech": {
+      "get": {
+        "tags": ["Questions"],
+        "summary": "Get questions",
+        "description": "Return 12 technical questions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Provide questions",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "default": "success",
+                  "description": "Responce status"
+                },
+                "code": {
+                  "type": "integer",
+                  "default": 200,
+                  "description": "Responce code"
+                },
+                "data": {
+                  "type": "array",
+                  
+                  "items": {
+                    "type":"object",
+                    "properties": {
+                    "answers": {
+                      "type": "array",
+                      "items":{"type":"string"},
+                      "description": "Answers"
+                    },
+                    "question": {
+                      "type": "string",
+                      "description": "Question"
+                    },
+                    "questionId": {
+                      "type": "string",
+                      "description": "Question Id"
+                    },
+                    "rightAnswer": {
+                      "type": "string",
+                      "description": "Right answer"
+                    }
+                  }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
+
   },
   "definitions": {
     "Unauthorized": {
