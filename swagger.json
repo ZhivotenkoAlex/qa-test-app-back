@@ -1,216 +1,178 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.1",
   "info": {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "title": "QA test app",
-    "description": "QA testing application"
+    "description": "QA testing app specification"
   },
-  "host": "localhost:3000",
-  "basePath": "/api",
-  "schemes": ["http"],
   "consumes": ["application/json"],
   "produces": ["application/json"],
+  "servers": [{ "url": "http://localhost:3000/api" }],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authorization endpoints"
+    },
+    {
+      "name": "User",
+      "description": "User endpoints"
+    }
+  ],
   "paths": {
-    "/register": {
+    "/auth/register": {
       "post": {
         "tags": ["Auth"],
-        "summary": "Create a new user",
-        "description": "Registration of a new user",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "user",
-            "description": "The user to create",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": { "type": "string" },
-                "email": { "type": "string" },
-                "password": { "type": "string" }
-              },
-              "required": ["name", "email", "password"]
+        "summary": "User registration",
+        "parameters": [],
+        "requestBody": {
+          "description": "Registration's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationAndLoginRequest"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "201": {
-            "description": "A new user object",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "default": "success",
-                  "description": "Responce status"
-                },
-                "code": {
-                  "type": "integer",
-                  "default": 201,
-                  "description": "Responce code"
-                },
-                "data": {
-                  "type": "object",
-                  "properties": {
-                    "token": {
-                      "type": "string",
-                      "description": "Autorization token"
-                    },
-                    "user": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "The new user name"
-                        },
-                        "email": {
-                          "type": "string",
-                          "description": "The new user email"
-                        }
-                      }
-                    }
-                  }
+            "description": "User registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Bad request error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Error message"
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
                 }
               }
             }
           },
           "404": {
             "description": "Page not found error",
-            "schema": { "$ref": "#definitions/NotFound" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
           },
           "409": {
             "description": "Conflict error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "default": "error",
-                  "description": "Responce status"
-                },
-                "code": {
-                  "type": "integer",
-                  "default": 409,
-                  "description": "Responce code"
-                },
-                "data": {
-                  "type": "string",
-                  "description": "Error"
-                },
-                "message": {
-                  "type": "string",
-                  "description": "Error message"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conflict"
                 }
               }
             }
           },
           "500": {
             "description": "Internal server error",
-            "schema": { "$ref": "#definitions/DefaultError" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultError"
+                }
+              }
+            }
           },
           "default": {
             "description": "Unexpected error",
-            "schema": { "$ref": "#definitions/DefaultError" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultError"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/login": {
+    "/auth/login": {
       "post": {
         "tags": ["Auth"],
         "summary": "User log in",
-        "description": "Loggining in existing user",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "user",
-            "description": "The user to log in",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": { "type": "string" },
-                "password": { "type": "string" }
-              },
-              "required": ["email", "password"]
+        "parameters": [],
+        "requestBody": {
+          "description": "Log in object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationAndLoginRequest"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "User is logged in",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "default": "success",
-                  "description": "Responce status"
-                },
-                "code": {
-                  "type": "integer",
-                  "default": 200,
-                  "description": "Responce code"
-                },
-                "data": {
-                  "type": "object",
-                  "properties": {
-                    "token": {
-                      "type": "string",
-                      "description": "Autorization token"
-                    },
-                    "user": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "The logged in user name"
-                        },
-                        "email": {
-                          "type": "string",
-                          "description": "The logged in user email"
-                        }
-                      }
-                    }
-                  }
+            "description": "User logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogInResponse"
                 }
               }
             }
           },
           "401": {
             "description": "Unauthorized error",
-            "schema": { "$ref": "#definitions/Unauthorized" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
           },
           "404": {
             "description": "Page not found error",
-            "schema": { "$ref": "#definitions/NotFound" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
           },
           "500": {
             "description": "Internal server error",
-            "schema": { "$ref": "#definitions/DefaultError" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultError"
+                }
+              }
+            }
           },
           "default": {
             "description": "Unexpected error",
-            "schema": { "$ref": "#definitions/DefaultError" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultError"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/logout": {
+    "/auth/logout": {
       "post": {
         "tags": ["Auth"],
         "summary": "User log out",
-        "description": "Log out current user",
         "parameters": [
           {
             "in": "header",
@@ -220,25 +182,50 @@
             "required": true
           }
         ],
+        "security": [{ "Bearer": [] }],
         "responses": {
           "204": {
             "description": "The user was logged out"
           },
           "401": {
             "description": "Unauthorized error",
-            "schema": { "$ref": "#definitions/Unauthorized" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
           },
           "404": {
             "description": "Page not found error",
-            "schema": { "$ref": "#definitions/NotFound" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
           },
           "500": {
             "description": "Internal server error",
-            "schema": { "$ref": "#definitions/DefaultError" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultError"
+                }
+              }
+            }
           },
           "default": {
             "description": "Unexpected error",
-            "schema": { "$ref": "#definitions/DefaultError" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultError"
+                }
+              }
+            }
           }
         }
       }
@@ -246,8 +233,7 @@
     "/user/info": {
       "get": {
         "tags": ["User"],
-        "summary": "Get user information",
-        "description": "Information about current user",
+        "summary": "Get user email",
         "parameters": [
           {
             "in": "header",
@@ -257,105 +243,264 @@
             "required": true
           }
         ],
+        "security": [{ "Bearer": [] }],
         "responses": {
           "200": {
             "description": "Provide user information",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "default": "success",
-                  "description": "Responce status"
-                },
-                "code": {
-                  "type": "integer",
-                  "default": 200,
-                  "description": "Responce code"
-                },
-                "data": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "string",
-                      "description": "The current user name"
-                    },
-                    "email": {
-                      "type": "string",
-                      "description": "The current user email"
-                    }
-                  }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InfoResponse"
                 }
               }
             }
           },
           "401": {
             "description": "Unauthorized error",
-            "schema": { "$ref": "#definitions/Unauthorized" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
           },
           "404": {
             "description": "Page not found error",
-            "schema": { "$ref": "#definitions/NotFound" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
           },
           "500": {
             "description": "Internal server error",
-            "schema": { "$ref": "#definitions/DefaultError" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultError"
+                }
+              }
+            }
           },
           "default": {
             "description": "Unexpected error",
-            "schema": { "$ref": "#definitions/DefaultError" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultError"
+                }
+              }
+            }
           }
         }
       }
     }
   },
-  "definitions": {
-    "Unauthorized": {
-      "properties": {
-        "status": {
-          "type": "string",
-          "default": "error",
-          "description": "Responce status"
-        },
-        "code": {
-          "type": "integer",
-          "default": 401,
-          "description": "Responce code"
-        },
-        "data": {
-          "type": "string",
-          "description": "Error"
-        },
-        "message": {
-          "type": "string",
-          "description": "Error message"
+  "components": {
+    "schemas": {
+      "RegistrationAndLoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "example": "qwerty123456"
+          }
+        }
+      },
+      "LogInResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "default": "success",
+            "description": "Responce status"
+          },
+          "code": {
+            "type": "integer",
+            "default": 200,
+            "description": "Responce code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "token": {
+                "type": "string",
+                "description": "Autorization token",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNmIyODEzODc2NDM0MjhhYzI1NTAzNiIsImlhdCI6MTYxNzY1MDcwMiwiZXhwIjoxNjE3NjU3OTAyfQ.bYMNgHTQGXnZsNXTfjoSKVvJzb20HDzbPzZxevXjSXw"
+              },
+              "user": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "The logged in user email",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "RegistrationResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "default": "success",
+            "description": "Responce status"
+          },
+          "code": {
+            "type": "integer",
+            "default": 201,
+            "description": "Responce code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "token": {
+                "type": "string",
+                "description": "Autorization token",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNmIyODEzODc2NDM0MjhhYzI1NTAzNiIsImlhdCI6MTYxNzY1MDcwMiwiZXhwIjoxNjE3NjU3OTAyfQ.bYMNgHTQGXnZsNXTfjoSKVvJzb20HDzbPzZxevXjSXw"
+              },
+              "user": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "The new user email",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "InfoResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "default": "success",
+            "description": "Responce status"
+          },
+          "code": {
+            "type": "integer",
+            "default": 200,
+            "description": "Responce code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "description": "The current user email",
+                "format": "email"
+              }
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          }
+        }
+      },
+      "Unauthorized": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "default": "error",
+            "description": "Responce status"
+          },
+          "code": {
+            "type": "integer",
+            "default": 401,
+            "description": "Responce code"
+          },
+          "data": {
+            "type": "string",
+            "description": "Error"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          }
+        }
+      },
+      "NotFound": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "default": "error",
+            "description": "Responce status"
+          },
+          "code": {
+            "type": "integer",
+            "default": 404,
+            "description": "Responce code"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          }
+        }
+      },
+      "Conflict": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "default": "error",
+            "description": "Responce status"
+          },
+          "code": {
+            "type": "integer",
+            "default": 409,
+            "description": "Responce code"
+          },
+          "data": {
+            "type": "string",
+            "description": "Error"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          }
+        }
+      },
+      "DefaultError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          }
         }
       }
     },
-    "NotFound": {
-      "properties": {
-        "status": {
-          "type": "string",
-          "default": "error",
-          "description": "Responce status"
-        },
-        "code": {
-          "type": "integer",
-          "default": 404,
-          "description": "Responce code"
-        },
-        "message": {
-          "type": "string",
-          "description": "Error message"
-        }
-      }
-    },
-    "DefaultError": {
-      "properties": {
-        "message": {
-          "type": "string",
-          "description": "Error message"
-        }
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }

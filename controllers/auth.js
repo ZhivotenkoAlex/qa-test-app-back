@@ -36,7 +36,6 @@ const register = async (req, res, next) => {
       data: {
         token,
         user: {
-          name: newUser.name,
           email: newUser.email,
         },
       },
@@ -75,7 +74,6 @@ const login = async (req, res, next) => {
       data: {
         token,
         user: {
-          name: user.name,
           email: user.email,
         },
       },

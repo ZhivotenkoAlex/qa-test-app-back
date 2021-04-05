@@ -11,7 +11,6 @@ const userInformation = async (req, res, next) => {
       status: "success",
       code: HttpCode.OK,
       data: {
-        name: user.name,
         email: user.email,
       },
     });
