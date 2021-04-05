@@ -6,11 +6,6 @@ const saltRounds = Number(process.env.SALT_ROUNDS);
 
 const userSchema = new Schema(
   {
-    name: {
-      type: String,
-      minlength: 3,
-      required: [true, "Name required"],
-    },
     email: {
       type: String,
       required: [true, "Email required"],
