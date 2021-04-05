@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { listQuestionsTech } = require("../../model/questions");
+const { listQuestionsTech } = require("../../model/questions-tech");
 
 const getRandomIntInclusive = (min, max) => {
   min = Math.ceil(min);
