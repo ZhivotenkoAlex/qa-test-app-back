@@ -311,7 +311,7 @@
     "/test-tech": {
       "get": {
         "tags": ["Questions"],
-        "summary": "Get questions",
+        "summary": "Get technical questions",
         "description": "Return 12 technical questions",
         "parameters": [],
         "responses": {
@@ -361,8 +361,174 @@
           }
         }
       }
+    },
+    "/test-theory": {
+      "get": {
+        "tags": ["Questions"],
+        "summary": "Get theory questions",
+        "description": "Return 12 theory questions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Provide questions",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "default": "success",
+                  "description": "Responce status"
+                },
+                "code": {
+                  "type": "integer",
+                  "default": 200,
+                  "description": "Responce code"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type":"object",
+                    "properties": {
+                    "answers": {
+                      "type": "array",
+                      "items":{"type":"string"},
+                      "description": "Answers"
+                    },
+                    "question": {
+                      "type": "string",
+                      "description": "Question"
+                    },
+                    "questionId": {
+                      "type": "string",
+                      "description": "Question Id"
+                    },
+                    "rightAnswer": {
+                      "type": "string",
+                      "description": "Right answer"
+                    }
+                  }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/test-tech/right-answers": {
+      "post": {
+        "tags": ["Questions"],
+        "summary": "Test result answers the technical test",
+        "description": "Return number of correct answers",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Answers",
+            "description": "List of 12 answers",
+            "schema": {
+              "type": "array",
+              "items":{
+                "type":"object",
+              "properties": {
+                "questionId": { "type": "string" },
+                "currentAnswer": { "type": "string" }
+              },
+              "required": ["email", "password"]}
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Test result",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "default": "success",
+                  "description": "Responce status"
+                },
+                "code": {
+                  "type": "integer",
+                  "default": 200,
+                  "description": "Responce code"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "rightAnswer": {
+                      "type": "string",
+                      "description": "Number of right answers"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": { "$ref": "#definitions/DefaultError" }
+          }
+        }
+      }
+    },
+    "/test-theory/right-answers": {
+      "post": {
+        "tags": ["Questions"],
+        "summary": "Test result answers the theory test",
+        "description": "Return number of correct answers",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Answers",
+            "description": "List of 12 answers",
+            "schema": {
+              "type": "array",
+              "items":{
+                "type":"object",
+              "properties": {
+                "questionId": { "type": "string" },
+                "currentAnswer": { "type": "string" }
+              },
+              "required": ["email", "password"]}
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Test result",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "default": "success",
+                  "description": "Responce status"
+                },
+                "code": {
+                  "type": "integer",
+                  "default": 200,
+                  "description": "Responce code"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "rightAnswer": {
+                      "type": "string",
+                      "description": "Number of right answers"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": { "$ref": "#definitions/DefaultError" }
+          }
+        }
+      }
     }
-
   },
   "definitions": {
     "Unauthorized": {
