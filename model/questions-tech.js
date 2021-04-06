@@ -1,4 +1,4 @@
-const QuestionTechShema = require("./schemas/questions-tech");
+const QuestionTechShema = require("./schemas/questions-tech"); 
 
 // const { MongoClient } = require("mongodb");
 // require("dotenv").config();

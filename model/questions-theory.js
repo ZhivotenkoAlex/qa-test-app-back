@@ -1,4 +1,4 @@
-// const QuestionTheoryShema = require("./schemas/questions-theory");
+// const QuestionTheoryShema = require("./schemas/questions-theory"); 
 
 const { MongoClient } = require("mongodb");
 require("dotenv").config();

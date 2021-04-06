@@ -13,7 +13,7 @@ router.get("/", async (_req, res, next) => {
     const list = await listQuestionsTheory();
     const arrInt = [];
     const newList = [];
-    while (arrInt.length < 12) {
+    while (arrInt.length < 12) { 
       const idQa = getRandomIntInclusive(1, list.length);
       if (!arrInt.includes(idQa)) {
         arrInt.push(idQa);

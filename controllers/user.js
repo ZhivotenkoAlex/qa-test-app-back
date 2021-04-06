@@ -1,4 +1,4 @@
-const { findByToken } = require("../model/users");
+const { findByToken } = require("../model/users"); 
 const { HttpCode } = require("../helpers/constants");
 
 const userInformation = async (req, res, next) => {

@@ -10,7 +10,7 @@
   "servers": [{ "url": "http://localhost:3000/api" }],
   "tags": [
     {
-      "name": "Auth",
+      "name": "Auth", 
       "description": "Authorization endpoints"
     },
     {

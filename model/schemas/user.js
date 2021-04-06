@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcryptjs"); 
 
 require("dotenv").config();
 const saltRounds = Number(process.env.SALT_ROUNDS);
