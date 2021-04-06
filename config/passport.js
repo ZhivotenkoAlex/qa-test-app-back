@@ -6,7 +6,7 @@ require("dotenv").config();
 const SECRET_KEY = process.env.JWT_SECRET;
 
 const params = {
-  secretOrKey: SECRET_KEY,
+  secretOrKey:  SECRET_KEY,
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 };
 
