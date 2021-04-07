@@ -1,4 +1,6 @@
-const jwt = require("jsonwebtoken"); 
+const jwt = require("jsonwebtoken");
+const axios = require("axios");
+const queryString = require("query-string");
 const Users = require("../model/users");
 const { HttpCode } = require("../helpers/constants");
 
@@ -86,9 +88,85 @@ const login = async (req, res, next) => {
 const logout = async (req, res, next) => {
   const userID = req.user.id;
 
-  await Users.updateToken(userID, null);
+  try {
+    await Users.updateToken(userID, null);
 
-  return res.status(HttpCode.NO_CONTENT).json({});
+    return res.status(HttpCode.NO_CONTENT).json({});
+  } catch (e) {
+    next(e);
+  }
 };
 
-module.exports = { register, login, logout };
+const googleAuth = async (req, res, next) => {
+  try {
+    const stringifiedParams = queryString.stringify({
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      redirect_uri: `${process.env.BASE_URL}/auth/google-redirect`,
+      scope: [
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+      ].join(" "),
+      response_type: "code",
+      access_type: "offline",
+      prompt: "consent",
+    });
+
+    return res.redirect(
+      `https://accounts.google.com/o/oauth2/v2/auth?${stringifiedParams}`
+    );
+  } catch (e) {
+    next(e);
+  }
+};
+
+const googleRedirect = async (req, res, next) => {
+  try {
+    const fullUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+
+    const urlObj = new URL(fullUrl);
+
+    const urlParams = queryString.parse(urlObj.search);
+
+    const code = urlParams.code;
+
+    const tokenData = await axios({
+      url: `https://oauth2.googleapis.com/token`,
+      method: "post",
+      data: {
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: `${process.env.BASE_URL}/auth/google-redirect`,
+        grant_type: "authorization_code",
+        code,
+      },
+    });
+
+    const userData = await axios({
+      url: "https://www.googleapis.com/oauth2/v2/userinfo",
+      method: "get",
+      headers: {
+        Authorization: `Bearer ${tokenData.data.access_token}`,
+      },
+    });
+
+    let user = await Users.findByEmail(userData.data.email);
+
+    if (!user) {
+      user = await Users.createWithGoogle(userData.data.email);
+    }
+
+    const id = user._id;
+
+    const payload = { id };
+
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "2h" });
+
+    await Users.updateToken(id, token);
+
+    return res.redirect(`${process.env.BASE_URL}?token=${token}`);
+  } catch (e) {
+    next(e);
+  }
+};
+
+module.exports = { register, login, logout, googleAuth, googleRedirect };
