@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "version": "1.0.1",
+    "version": "1.0.2",
     "title": "QA test app",
     "description": "QA testing app specification"
   },
@@ -10,12 +10,16 @@
   "servers": [{ "url": "http://localhost:3000/api" }],
   "tags": [
     {
-      "name": "Auth", 
+      "name": "Auth",
       "description": "Authorization endpoints"
     },
     {
       "name": "User",
       "description": "User endpoints"
+    },
+    {
+      "name": "Questions",
+      "description": "Questions endpoints"
     }
   ],
   "paths": {
@@ -165,6 +169,18 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/auth/google": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User authentication with Google",
+        "parameters": [],
+        "responses": {
+          "redirect": {
+            "description": "User redirect to http://.../?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNmIyODEzODc2NDM0MjhhYzI1NTAzNiIsImlhdCI6MTYxNzY1MDcwMiwiZXhwIjoxNjE3NjU3OTAyfQ.bYMNgHTQGXnZsNXTfjoSKVvJzb20HDzbPzZxevXjSXw"
           }
         }
       }
@@ -322,28 +338,28 @@
                 },
                 "data": {
                   "type": "array",
-                  
+
                   "items": {
-                    "type":"object",
+                    "type": "object",
                     "properties": {
-                    "answers": {
-                      "type": "array",
-                      "items":{"type":"string"},
-                      "description": "Answers"
-                    },
-                    "question": {
-                      "type": "string",
-                      "description": "Question"
-                    },
-                    "questionId": {
-                      "type": "string",
-                      "description": "Question Id"
-                    },
-                    "rightAnswer": {
-                      "type": "string",
-                      "description": "Right answer"
+                      "answers": {
+                        "type": "array",
+                        "items": { "type": "string" },
+                        "description": "Answers"
+                      },
+                      "question": {
+                        "type": "string",
+                        "description": "Question"
+                      },
+                      "questionId": {
+                        "type": "string",
+                        "description": "Question Id"
+                      },
+                      "rightAnswer": {
+                        "type": "string",
+                        "description": "Right answer"
+                      }
                     }
-                  }
                   }
                 }
               }
@@ -377,26 +393,26 @@
                 "data": {
                   "type": "array",
                   "items": {
-                    "type":"object",
+                    "type": "object",
                     "properties": {
-                    "answers": {
-                      "type": "array",
-                      "items":{"type":"string"},
-                      "description": "Answers"
-                    },
-                    "question": {
-                      "type": "string",
-                      "description": "Question"
-                    },
-                    "questionId": {
-                      "type": "string",
-                      "description": "Question Id"
-                    },
-                    "rightAnswer": {
-                      "type": "string",
-                      "description": "Right answer"
+                      "answers": {
+                        "type": "array",
+                        "items": { "type": "string" },
+                        "description": "Answers"
+                      },
+                      "question": {
+                        "type": "string",
+                        "description": "Question"
+                      },
+                      "questionId": {
+                        "type": "string",
+                        "description": "Question Id"
+                      },
+                      "rightAnswer": {
+                        "type": "string",
+                        "description": "Right answer"
+                      }
                     }
-                  }
                   }
                 }
               }
@@ -417,13 +433,14 @@
             "description": "List of 12 answers",
             "schema": {
               "type": "array",
-              "items":{
-                "type":"object",
-              "properties": {
-                "questionId": { "type": "string" },
-                "currentAnswer": { "type": "string" }
-              },
-              "required": ["email", "password"]}
+              "items": {
+                "type": "object",
+                "properties": {
+                  "questionId": { "type": "string" },
+                  "currentAnswer": { "type": "string" }
+                },
+                "required": ["email", "password"]
+              }
             }
           }
         ],
@@ -457,7 +474,13 @@
           },
           "default": {
             "description": "Unexpected error",
-            "schema": { "$ref": "#definitions/DefaultError" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultError"
+                }
+              }
+            }
           }
         }
       }
@@ -474,13 +497,14 @@
             "description": "List of 12 answers",
             "schema": {
               "type": "array",
-              "items":{
-                "type":"object",
-              "properties": {
-                "questionId": { "type": "string" },
-                "currentAnswer": { "type": "string" }
-              },
-              "required": ["email", "password"]}
+              "items": {
+                "type": "object",
+                "properties": {
+                  "questionId": { "type": "string" },
+                  "currentAnswer": { "type": "string" }
+                },
+                "required": ["email", "password"]
+              }
             }
           }
         ],
@@ -514,7 +538,13 @@
           },
           "default": {
             "description": "Unexpected error",
-            "schema": { "$ref": "#definitions/DefaultError" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultError"
+                }
+              }
+            }
           }
         }
       }
