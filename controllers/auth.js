@@ -163,7 +163,7 @@ const googleRedirect = async (req, res, next) => {
 
     await Users.updateToken(id, token);
 
-    return res.redirect(`${process.env.BASE_URL}?token=${token}`);
+    return res.redirect(`${process.env.FRONTEND_URL}?token=${token}`);
   } catch (e) {
     next(e);
   }
