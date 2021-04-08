@@ -1,13 +1,13 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "version": "1.0.2",
+    "version": "1.0.3",
     "title": "QA test app",
     "description": "QA testing app specification"
   },
   "consumes": ["application/json"],
   "produces": ["application/json"],
-  "servers": [{ "url": "http://localhost:3000/api" }],
+  "servers": [{ "url": "https://safe-bayou-94848.herokuapp.com/api" }],
   "tags": [
     {
       "name": "Auth",
