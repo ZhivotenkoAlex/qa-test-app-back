@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "version": "1.0.3",
+    "version": "1.0.4",
     "title": "QA test app",
     "description": "QA testing app specification"
   },
@@ -180,7 +180,7 @@
         "parameters": [],
         "responses": {
           "redirect": {
-            "description": "User redirect to http://.../?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNmIyODEzODc2NDM0MjhhYzI1NTAzNiIsImlhdCI6MTYxNzY1MDcwMiwiZXhwIjoxNjE3NjU3OTAyfQ.bYMNgHTQGXnZsNXTfjoSKVvJzb20HDzbPzZxevXjSXw"
+            "description": "User redirect to http://.../auth/google?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNmIyODEzODc2NDM0MjhhYzI1NTAzNiIsImlhdCI6MTYxNzY1MDcwMiwiZXhwIjoxNjE3NjU3OTAyfQ.bYMNgHTQGXnZsNXTfjoSKVvJzb20HDzbPzZxevXjSXw"
           }
         }
       }
