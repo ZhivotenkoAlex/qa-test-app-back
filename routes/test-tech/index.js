@@ -9,10 +9,10 @@ const getRandomIntInclusive = (min, max) => {
 };
 
 router.get("/", async (_req, res, next) => {
-  try { 
+  const arrInt = [];
+  const newList = [];
+  try {
     const list = await listQuestionsTech();
-    const arrInt = [];
-    const newList = [];
     while (arrInt.length < 12) {
       const idQa = getRandomIntInclusive(1, list.length);
       if (!arrInt.includes(idQa)) {
@@ -20,8 +20,8 @@ router.get("/", async (_req, res, next) => {
         newList.push(list.find(({ questionId }) => questionId === idQa));
       }
     }
-    console.log(arrInt);
-    console.log(newList.length);
+    // console.log(arrInt);
+    // console.log(newList);
     res.json({
       status: "success",
       code: 200,

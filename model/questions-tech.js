@@ -1,4 +1,4 @@
-const QuestionTechShema = require("./schemas/questions-tech"); 
+const QuestionTechShema = require("./schemas/questions-tech");
 
 // const { MongoClient } = require("mongodb");
 // require("dotenv").config();
@@ -12,6 +12,12 @@ const QuestionTechShema = require("./schemas/questions-tech");
 
 const listQuestionsTech = async () => {
   const results = await QuestionTechShema.find({});
+  results.forEach((obj) => {
+    // obj[rightAnswer] = null;
+    delete obj.rightAnswer;
+    // obj.rightAnswer = "";
+  });
+
   return results;
 };
 
