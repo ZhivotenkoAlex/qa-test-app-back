@@ -438,8 +438,7 @@
                 "properties": {
                   "questionId": { "type": "string" },
                   "currentAnswer": { "type": "string" }
-                },
-                "required": ["email", "password"]
+                }
               }
             }
           }
@@ -447,6 +446,8 @@
         "responses": {
           "200": {
             "description": "Test result",
+            "content":{
+              "application/json":{
             "schema": {
               "type": "object",
               "properties": {
@@ -460,27 +461,16 @@
                   "default": 200,
                   "description": "Responce code"
                 },
-                "data": {
-                  "type": "object",
+                "data":{
+                  "type":"object",
                   "properties": {
-                    "rightAnswer": {
-                      "type": "string",
-                      "description": "Number of right answers"
-                    }
-                  }
+                  "rightAnswer": { "type": "integer" }
+                }
                 }
               }
             }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DefaultError"
-                }
-              }
-            }
+          }
+          }
           }
         }
       }
@@ -511,6 +501,8 @@
         "responses": {
           "200": {
             "description": "Test result",
+            "content":{
+              "application/json":{
             "schema": {
               "type": "object",
               "properties": {
@@ -524,27 +516,16 @@
                   "default": 200,
                   "description": "Responce code"
                 },
-                "data": {
-                  "type": "object",
+                "data":{
+                  "type":"object",
                   "properties": {
-                    "rightAnswer": {
-                      "type": "string",
-                      "description": "Number of right answers"
-                    }
-                  }
+                  "rightAnswer": { "type": "integer" }
+                }
                 }
               }
             }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DefaultError"
-                }
-              }
-            }
+          }
+          }
           }
         }
       }

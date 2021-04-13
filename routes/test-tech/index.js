@@ -9,7 +9,7 @@ const getRandomIntInclusive = (min, max) => {
 };
 
 router.get("/", async (_req, res, next) => {
-  try { 
+  try {
     const list = await listQuestionsTech();
     const arrInt = [];
     const newList = [];
@@ -32,7 +32,7 @@ router.get("/", async (_req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/test-tech/right-answers", async (req, res, next) => {
   try {
     let rightAnswer = 0;
     const list = await listQuestionsTech();
