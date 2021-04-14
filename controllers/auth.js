@@ -5,7 +5,8 @@ const Users = require("../model/users");
 const { HttpCode } = require("../helpers/constants");
 
 require("dotenv").config();
-const SECRET_KEY = process.env.JWT_SECRET;
+const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
 const register = async (req, res, next) => {
   try {
@@ -28,15 +29,18 @@ const register = async (req, res, next) => {
 
     const payload = { id };
 
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "2h" });
+    const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET, { expiresIn: "2h" });
+    const refreshToken =jwt.sign(payload,JWT_REFRESH_SECRET, {expiresIn:"30d"})
 
-    await Users.updateToken(id, token);
+    await Users.updateToken(id, accessToken,refreshToken);
 
     return res.status(HttpCode.CREATED).json({
       status: "success",
       code: HttpCode.CREATED,
       data: {
-        token,
+        // We don`t need tokens when we registring 
+        // accessToken,
+        // refreshToken,
         user: {
           email: newUser.email,
         },
@@ -66,15 +70,18 @@ const login = async (req, res, next) => {
 
     const payload = { id };
 
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "2h" });
-
-    await Users.updateToken(id, token);
+    const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET, { expiresIn: "2h" });
+    const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: "30d" })
+    
+    await Users.updateToken(id, accessToken, refreshToken);
 
     return res.status(HttpCode.OK).json({
       status: "success",
       code: HttpCode.OK,
       data: {
-        token,
+        id,
+        accessToken,
+        refreshToken,
         user: {
           email: user.email,
         },
@@ -145,7 +152,7 @@ const googleRedirect = async (req, res, next) => {
       url: "https://www.googleapis.com/oauth2/v2/userinfo",
       method: "get",
       headers: {
-        Authorization: `Bearer ${tokenData.data.access_token}`,
+        Authorization: `Bearer ${tokenData.data.accessToken}`,
       },
     });
 
@@ -159,14 +166,56 @@ const googleRedirect = async (req, res, next) => {
 
     const payload = { id };
 
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "2h" });
+    const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET, { expiresIn: "2h" });
+    const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: "30d" })
 
-    await Users.updateToken(id, token);
+    await Users.updateToken(id, accessToken,refreshToken);
 
-    return res.redirect(`${process.env.FRONTEND_URL}/auth/google?token=${token}`);
+    return res.redirect(`${process.env.FRONTEND_URL}/auth/google?token=${accessToken}`);
   } catch (e) {
     next(e);
   }
 };
 
-module.exports = { register, login, logout, googleAuth, googleRedirect };
+const token = async (req, res, next) => {
+  try {
+    const tokenUser = req.body.refreshToken;
+    const user = await Users.findByRefreshToken(tokenUser);
+
+    const id = user._id;
+
+    const payload = { id };
+
+    const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET, { expiresIn: "2h" });
+    const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: "30d" })
+    
+    await Users.updateToken(id, accessToken, refreshToken);
+
+    return res.status(HttpCode.OK).json({
+      status: "success",
+      code: HttpCode.OK,
+      data: {
+        accessToken,
+        refreshToken,
+        mes:user.email
+      },
+      message: "refresh"
+      });
+    
+  } catch (error) {
+    next(error);
+  }
+}
+
+const GetAccessToken = async (req, res) => {
+  const userID = req.user.id;
+  
+  const payload = { userID };
+    const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET, { expiresIn: "2h" });
+    const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: "30d" })
+    return res.json({ status: true, message: 'login success.', data: { accessToken, refreshToken } })
+}
+
+
+
+module.exports = { register, login, logout, googleAuth, googleRedirect, GetAccessToken, token };

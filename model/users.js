@@ -12,6 +12,10 @@ const findByToken = async (token) => {
   return await User.findOne({ token });
 };
 
+const findByRefreshToken = async (refreshToken) => {
+  return await User.findOne({refreshToken});
+};
+
 const create = async ({ email, password }) => {
   const user = new User({ email, password });
 
@@ -24,9 +28,11 @@ const createWithGoogle = async (email) => {
   return await user.save();
 };
 
-const updateToken = async (id, token) => {
-  return await User.updateOne({ _id: id }, { token });
+const updateToken = async (id, accessToken, refreshToken) => {
+  return await User.updateOne({ _id: id }, { accessToken, refreshToken });
 };
+
+
 
 module.exports = {
   findByEmail,
@@ -35,4 +41,5 @@ module.exports = {
   create,
   createWithGoogle,
   updateToken,
+  findByRefreshToken
 };

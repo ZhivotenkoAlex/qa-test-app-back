@@ -19,12 +19,17 @@ const userSchema = new Schema(
     password: {
       type: String,
     },
-    token: {
+    accessToken: {
+      type: String,
+      default: null,
+    },
+    refreshToken: {
       type: String,
       default: null,
     },
   },
-  { versionKey: false, timestamps: true }
+  { versionKey: false, timestamps: true },
+ 
 );
 
 userSchema.pre("save", async function (next) {
