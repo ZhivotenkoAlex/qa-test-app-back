@@ -29,7 +29,9 @@ const register = async (req, res, next) => {
 
     const payload = { userID: newUser._id, sessionID: newSession._id };
 
-    const refreshToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "1m" });
+    const refreshToken = jwt.sign(payload, SECRET_KEY, {
+      expiresIn: 60 * 60 * 24 * 30,
+    });
     const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 30 });
 
     await Sessions.updateToken(newSession._id, refreshToken);
@@ -71,7 +73,9 @@ const login = async (req, res, next) => {
 
     const payload = { userID: user._id, sessionID: newSession._id };
 
-    const refreshToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "1m" });
+    const refreshToken = jwt.sign(payload, SECRET_KEY, {
+      expiresIn: 60 * 60 * 24 * 30,
+    });
     const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 30 });
 
     await Sessions.updateToken(newSession._id, refreshToken);
@@ -180,7 +184,9 @@ const googleRedirect = async (req, res, next) => {
 
     const payload = { userID: user._id, sessionID: newSession._id };
 
-    const refreshToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "1m" });
+    const refreshToken = jwt.sign(payload, SECRET_KEY, {
+      expiresIn: 60 * 60 * 24 * 30,
+    });
 
     await Sessions.updateToken(newSession._id, refreshToken);
 
@@ -219,7 +225,9 @@ const updateTokens = async (req, res, next) => {
 
     const payload = { userID: user._id, sessionID: newSession._id };
 
-    const refreshToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "1m" });
+    const refreshToken = jwt.sign(payload, SECRET_KEY, {
+      expiresIn: 60 * 60 * 24 * 30,
+    });
     const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 30 });
 
     await Sessions.updateToken(newSession._id, refreshToken);
