@@ -8,9 +8,9 @@ const findByID = async (id) => {
   return await User.findOne({ _id: id });
 };
 
-const findByToken = async (token) => {
-  return await User.findOne({ token });
-};
+// const findByToken = async (token) => {
+//   return await User.findOne({ token });
+// };
 
 const create = async ({ email, password }) => {
   const user = new User({ email, password });
@@ -24,15 +24,15 @@ const createWithGoogle = async (email) => {
   return await user.save();
 };
 
-const updateToken = async (id, token) => {
-  return await User.updateOne({ _id: id }, { token });
-};
+// const updateToken = async (id, token) => {
+//   return await User.updateOne({ _id: id }, { token });
+// };
 
 module.exports = {
   findByEmail,
   findByID,
-  findByToken,
+  // findByToken,
   create,
   createWithGoogle,
-  updateToken,
+  // updateToken,
 };
