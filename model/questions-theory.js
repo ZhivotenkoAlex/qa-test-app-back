@@ -1,4 +1,4 @@
-// const QuestionTheoryShema = require("./schemas/questions-theory"); 
+// const QuestionTheoryShema = require("./schemas/questions-theory");
 
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
@@ -9,7 +9,6 @@ const listQuestionsTheory = async () => {
     useUnifiedTopology: true,
   }).connect();
   const results = await client.db().collection("qa-theory").find().toArray();
-  console.log(results);
   return results;
 };
 module.exports = {
