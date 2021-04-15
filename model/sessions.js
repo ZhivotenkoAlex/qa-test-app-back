@@ -14,6 +14,14 @@ const findByUserID = async (userID) => {
   return await Session.findOne({ userID });
 };
 
+const findAllUserSessions = async (userID) => {
+  return await Session.find({ userID });
+};
+
+const deleteAllUserSessions = async (userID) => {
+  return await Session.deleteMany({ userID });
+};
+
 const remove = async (sessionID) => {
   return await Session.findOneAndRemove({ _id: sessionID });
 };
@@ -28,4 +36,6 @@ module.exports = {
   findByUserID,
   remove,
   updateToken,
+  findAllUserSessions,
+  deleteAllUserSessions,
 };

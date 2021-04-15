@@ -8,6 +8,14 @@ const { HttpCode } = require("../helpers/constants");
 require("dotenv").config();
 const SECRET_KEY = process.env.JWT_SECRET;
 
+const userSessionsControl = async (userID) => {
+  const quantityOfUserSessions = await Sessions.findAllUserSessions(userID);
+
+  if (quantityOfUserSessions.length >= 5) {
+    await Sessions.deleteAllUserSessions(userID);
+  }
+};
+
 const register = async (req, res, next) => {
   try {
     const { email } = req.body;
@@ -68,6 +76,8 @@ const login = async (req, res, next) => {
         message: "Email or password is wrong",
       });
     }
+
+    await userSessionsControl(user._id);
 
     const newSession = await Sessions.create(user._id);
 
@@ -180,6 +190,8 @@ const googleRedirect = async (req, res, next) => {
 
     // const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "2h" });
 
+    await userSessionsControl(user._id);
+
     const newSession = await Sessions.create(user._id);
 
     const payload = { userID: user._id, sessionID: newSession._id };
@@ -187,13 +199,14 @@ const googleRedirect = async (req, res, next) => {
     const refreshToken = jwt.sign(payload, SECRET_KEY, {
       expiresIn: 60 * 60 * 24 * 30,
     });
+    const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 30 });
 
     await Sessions.updateToken(newSession._id, refreshToken);
 
     // await Users.updateToken(id, token);
 
     return res.redirect(
-      `${process.env.FRONTEND_URL}/google-redirect?token=${refreshToken}`
+      `${process.env.FRONTEND_URL}/google-redirect?access=${accessToken}&token=${refreshToken}`
     );
   } catch (e) {
     next(e);
@@ -207,8 +220,9 @@ const updateTokens = async (req, res, next) => {
     const user = await Users.findByID(req.user._id);
     const session = await Sessions.findByID(req.session._id);
 
-    const comparison =
-      token.toString().trim() === session.refreshToken.toString().trim();
+    const comparison = session
+      ? token.toString().trim() === session.refreshToken.toString().trim()
+      : false;
 
     if (!user || !session || !comparison) {
       return res.status(HttpCode.UNAUTHORIZED).json({
