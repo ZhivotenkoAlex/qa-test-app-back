@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "version": "1.0.5",
+    "version": "1.0.6",
     "title": "QA test app",
     "description": "QA testing app specification"
   },
@@ -174,13 +174,81 @@
       }
     },
     "/auth/google": {
-      "post": {
+      "get": {
         "tags": ["Auth"],
         "summary": "User authentication with Google",
         "parameters": [],
         "responses": {
           "redirect": {
-            "description": "User redirect to http://.../google-redirect?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNmIyODEzODc2NDM0MjhhYzI1NTAzNiIsImlhdCI6MTYxNzY1MDcwMiwiZXhwIjoxNjE3NjU3OTAyfQ.bYMNgHTQGXnZsNXTfjoSKVvJzb20HDzbPzZxevXjSXw"
+            "description": "User redirect to http://.../google-redirect?token=refresh-token"
+          }
+        }
+      }
+    },
+    "/auth/refresh-token": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Refresh user tokens",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Bearer refresh-token",
+            "required": true
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Tokens are refreshed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Page not found error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultError"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultError"
+                }
+              }
+            }
           }
         }
       }
@@ -446,31 +514,31 @@
         "responses": {
           "200": {
             "description": "Test result",
-            "content":{
-              "application/json":{
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "default": "success",
-                  "description": "Responce status"
-                },
-                "code": {
-                  "type": "integer",
-                  "default": 200,
-                  "description": "Responce code"
-                },
-                "data":{
-                  "type":"object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
                   "properties": {
-                  "rightAnswer": { "type": "integer" }
-                }
+                    "status": {
+                      "type": "string",
+                      "default": "success",
+                      "description": "Responce status"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "default": 200,
+                      "description": "Responce code"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "rightAnswer": { "type": "integer" }
+                      }
+                    }
+                  }
                 }
               }
             }
-          }
-          }
           }
         }
       }
@@ -501,31 +569,31 @@
         "responses": {
           "200": {
             "description": "Test result",
-            "content":{
-              "application/json":{
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "default": "success",
-                  "description": "Responce status"
-                },
-                "code": {
-                  "type": "integer",
-                  "default": 200,
-                  "description": "Responce code"
-                },
-                "data":{
-                  "type":"object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
                   "properties": {
-                  "rightAnswer": { "type": "integer" }
-                }
+                    "status": {
+                      "type": "string",
+                      "default": "success",
+                      "description": "Responce status"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "default": 200,
+                      "description": "Responce code"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "rightAnswer": { "type": "integer" }
+                      }
+                    }
+                  }
                 }
               }
             }
-          }
-          }
           }
         }
       }
@@ -565,10 +633,15 @@
           "data": {
             "type": "object",
             "properties": {
-              "token": {
+              "refreshToken": {
                 "type": "string",
-                "description": "Autorization token",
+                "description": "Refresh token",
                 "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNmIyODEzODc2NDM0MjhhYzI1NTAzNiIsImlhdCI6MTYxNzY1MDcwMiwiZXhwIjoxNjE3NjU3OTAyfQ.bYMNgHTQGXnZsNXTfjoSKVvJzb20HDzbPzZxevXjSXw"
+              },
+              "accessToken": {
+                "type": "string",
+                "description": "Access token",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNmIyODEzODc2NDM0MjhhYzI1NTAzNiIsImlhdCI6MTYxNzY1MDcwMiwiZXhwIjoxNjE3NjU3OTAyfQ.bYMNgHTQGXnZsNXTfjoSKVvJzb20HDzbPzZxevXjfgw"
               },
               "user": {
                 "type": "object",
@@ -600,10 +673,15 @@
           "data": {
             "type": "object",
             "properties": {
-              "token": {
+              "refreshToken": {
                 "type": "string",
-                "description": "Autorization token",
+                "description": "Refresh token",
                 "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNmIyODEzODc2NDM0MjhhYzI1NTAzNiIsImlhdCI6MTYxNzY1MDcwMiwiZXhwIjoxNjE3NjU3OTAyfQ.bYMNgHTQGXnZsNXTfjoSKVvJzb20HDzbPzZxevXjSXw"
+              },
+              "accessToken": {
+                "type": "string",
+                "description": "Access token",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNmIyODEzODc2NDM0MjhhYzI1NTAzNiIsImlhdCI6MTYxNzY1MDcwMiwiZXhwIjoxNjE3NjU3OTAyfQ.bYMNgHTQGXnZsNXTfjoSKVvJzb20HDzbPzZxevXjfgw"
               },
               "user": {
                 "type": "object",
@@ -614,6 +692,36 @@
                     "format": "email"
                   }
                 }
+              }
+            }
+          }
+        }
+      },
+      "RefreshTokenResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "default": "success",
+            "description": "Responce status"
+          },
+          "code": {
+            "type": "integer",
+            "default": 200,
+            "description": "Responce code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "refreshToken": {
+                "type": "string",
+                "description": "Refresh token",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNmIyODEzODc2NDM0MjhhYzI1NTAzNiIsImlhdCI6MTYxNzY1MDcwMiwiZXhwIjoxNjE3NjU3OTAyfQ.bYMNgHTQGXnZsNXTfjoSKVvJzb20HDzbPzZxevXjSXw"
+              },
+              "accessToken": {
+                "type": "string",
+                "description": "Access token",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNmIyODEzODc2NDM0MjhhYzI1NTAzNiIsImlhdCI6MTYxNzY1MDcwMiwiZXhwIjoxNjE3NjU3OTAyfQ.bYMNgHTQGXnZsNXTfjoSKVvJzb20HDzbPzZxevXjfgw"
               }
             }
           }

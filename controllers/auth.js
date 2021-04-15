@@ -2,10 +2,19 @@ const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const queryString = require("query-string");
 const Users = require("../model/users");
+const Sessions = require("../model/sessions");
 const { HttpCode } = require("../helpers/constants");
 
 require("dotenv").config();
 const SECRET_KEY = process.env.JWT_SECRET;
+
+const userSessionsControl = async (userID) => {
+  const quantityOfUserSessions = await Sessions.findAllUserSessions(userID);
+
+  if (quantityOfUserSessions.length >= 5) {
+    await Sessions.deleteAllUserSessions(userID);
+  }
+};
 
 const register = async (req, res, next) => {
   try {
@@ -24,19 +33,25 @@ const register = async (req, res, next) => {
 
     const newUser = await Users.create(req.body);
 
-    const id = newUser._id;
+    const newSession = await Sessions.create(newUser._id);
 
-    const payload = { id };
+    const payload = { userID: newUser._id, sessionID: newSession._id };
 
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "2h" });
+    const refreshToken = jwt.sign(payload, SECRET_KEY, {
+      expiresIn: 60 * 60 * 24 * 30,
+    });
+    const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 30 });
 
-    await Users.updateToken(id, token);
+    await Sessions.updateToken(newSession._id, refreshToken);
+
+    // await Users.updateToken(id, token);
 
     return res.status(HttpCode.CREATED).json({
       status: "success",
       code: HttpCode.CREATED,
       data: {
-        token,
+        refreshToken,
+        accessToken,
         user: {
           email: newUser.email,
         },
@@ -62,19 +77,33 @@ const login = async (req, res, next) => {
       });
     }
 
-    const id = user._id;
+    await userSessionsControl(user._id);
 
-    const payload = { id };
+    const newSession = await Sessions.create(user._id);
 
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "2h" });
+    const payload = { userID: user._id, sessionID: newSession._id };
 
-    await Users.updateToken(id, token);
+    const refreshToken = jwt.sign(payload, SECRET_KEY, {
+      expiresIn: 60 * 60 * 24 * 30,
+    });
+    const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 30 });
+
+    await Sessions.updateToken(newSession._id, refreshToken);
+
+    // const id = user._id;
+
+    // const payload = { id };
+
+    // const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "2h" });
+
+    // await Users.updateToken(id, token);
 
     return res.status(HttpCode.OK).json({
       status: "success",
       code: HttpCode.OK,
       data: {
-        token,
+        refreshToken,
+        accessToken,
         user: {
           email: user.email,
         },
@@ -86,10 +115,10 @@ const login = async (req, res, next) => {
 };
 
 const logout = async (req, res, next) => {
-  const userID = req.user.id;
+  const sessionID = req.session._id;
 
   try {
-    await Users.updateToken(userID, null);
+    await Sessions.remove(sessionID);
 
     return res.status(HttpCode.NO_CONTENT).json({});
   } catch (e) {
@@ -155,18 +184,86 @@ const googleRedirect = async (req, res, next) => {
       user = await Users.createWithGoogle(userData.data.email);
     }
 
-    const id = user._id;
+    // const id = user._id;
 
-    const payload = { id };
+    // const payload = { id };
 
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "2h" });
+    // const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "2h" });
 
-    await Users.updateToken(id, token);
+    await userSessionsControl(user._id);
 
-    return res.redirect(`${process.env.FRONTEND_URL}/google-redirect?token=${token}`);
+    const newSession = await Sessions.create(user._id);
+
+    const payload = { userID: user._id, sessionID: newSession._id };
+
+    const refreshToken = jwt.sign(payload, SECRET_KEY, {
+      expiresIn: 60 * 60 * 24 * 30,
+    });
+    const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 30 });
+
+    await Sessions.updateToken(newSession._id, refreshToken);
+
+    // await Users.updateToken(id, token);
+
+    return res.redirect(
+      `${process.env.FRONTEND_URL}/google-redirect?access=${accessToken}&token=${refreshToken}`
+    );
   } catch (e) {
     next(e);
   }
 };
 
-module.exports = { register, login, logout, googleAuth, googleRedirect };
+const updateTokens = async (req, res, next) => {
+  try {
+    const [, token] = req.get("Authorization").split(" ");
+
+    const user = await Users.findByID(req.user._id);
+    const session = await Sessions.findByID(req.session._id);
+
+    const comparison = session
+      ? token.toString().trim() === session.refreshToken.toString().trim()
+      : false;
+
+    if (!user || !session || !comparison) {
+      return res.status(HttpCode.UNAUTHORIZED).json({
+        status: "error",
+        code: HttpCode.UNAUTHORIZED,
+        data: "Unauthorized",
+        message: "Not authorized",
+      });
+    }
+
+    await Sessions.remove(session._id);
+
+    const newSession = await Sessions.create(user._id);
+
+    const payload = { userID: user._id, sessionID: newSession._id };
+
+    const refreshToken = jwt.sign(payload, SECRET_KEY, {
+      expiresIn: 60 * 60 * 24 * 30,
+    });
+    const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 30 });
+
+    await Sessions.updateToken(newSession._id, refreshToken);
+
+    return res.status(HttpCode.OK).json({
+      status: "success",
+      code: HttpCode.OK,
+      data: {
+        refreshToken,
+        accessToken,
+      },
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+module.exports = {
+  register,
+  login,
+  logout,
+  googleAuth,
+  googleRedirect,
+  updateTokens,
+};
