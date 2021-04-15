@@ -21,8 +21,9 @@ router.get("/", guard, async (_req, res, next) => {
         newList.push(list.find(({ questionId }) => questionId === idQa));
       }
     }
-    console.log(arrInt);
-    console.log(newList.length);
+    newList.forEach((obj) => {
+      delete obj.rightAnswer;
+    });
     res.json({
       status: "success",
       code: 200,
@@ -33,7 +34,7 @@ router.get("/", guard, async (_req, res, next) => {
   }
 });
 
-router.post("/test-tech/right-answers", guard, async (req, res, next) => {
+router.post("/right-answers", guard, async (req, res, next) => {
   try {
     let rightAnswer = 0;
     const list = await listQuestionsTech();

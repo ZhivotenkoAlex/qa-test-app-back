@@ -21,8 +21,9 @@ router.get("/", guard, async (_req, res, next) => {
         newList.push(list.find(({ questionId }) => questionId === idQa));
       }
     }
-    console.log(arrInt);
-    console.log(newList.length);
+    newList.forEach((obj) => {
+      delete obj.rightAnswer;
+    });
     res.json({
       status: "success",
       code: 200,
