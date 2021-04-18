@@ -8,10 +8,25 @@ const { HttpCode } = require("../helpers/constants");
 require("dotenv").config();
 const SECRET_KEY = process.env.JWT_SECRET;
 
-const userSessionsControl = async (userID) => {
-  const quantityOfUserSessions = await Sessions.findAllUserSessions(userID);
+const createTokens = async (userID) => {
+  const newSession = await Sessions.create(userID);
 
-  if (quantityOfUserSessions.length >= 5) {
+  const payload = { userID, sessionID: newSession._id };
+
+  const refreshToken = jwt.sign(payload, SECRET_KEY, {
+    expiresIn: 60 * 60 * 24 * 30,
+  });
+  const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 30 });
+
+  await Sessions.updateToken(newSession._id, refreshToken);
+
+  return { refreshToken, accessToken };
+};
+
+const userSessionsControl = async (userID) => {
+  const allUserSessions = await Sessions.findAllUserSessions(userID);
+
+  if (allUserSessions.length >= 5) {
     await Sessions.deleteAllUserSessions(userID);
   }
 };
@@ -33,18 +48,7 @@ const register = async (req, res, next) => {
 
     const newUser = await Users.create(req.body);
 
-    const newSession = await Sessions.create(newUser._id);
-
-    const payload = { userID: newUser._id, sessionID: newSession._id };
-
-    const refreshToken = jwt.sign(payload, SECRET_KEY, {
-      expiresIn: 60 * 60 * 24 * 30,
-    });
-    const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 30 });
-
-    await Sessions.updateToken(newSession._id, refreshToken);
-
-    // await Users.updateToken(id, token);
+    const { refreshToken, accessToken } = await createTokens(newUser._id);
 
     return res.status(HttpCode.CREATED).json({
       status: "success",
@@ -79,24 +83,7 @@ const login = async (req, res, next) => {
 
     await userSessionsControl(user._id);
 
-    const newSession = await Sessions.create(user._id);
-
-    const payload = { userID: user._id, sessionID: newSession._id };
-
-    const refreshToken = jwt.sign(payload, SECRET_KEY, {
-      expiresIn: 60 * 60 * 24 * 30,
-    });
-    const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 30 });
-
-    await Sessions.updateToken(newSession._id, refreshToken);
-
-    // const id = user._id;
-
-    // const payload = { id };
-
-    // const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "2h" });
-
-    // await Users.updateToken(id, token);
+    const { refreshToken, accessToken } = await createTokens(user._id);
 
     return res.status(HttpCode.OK).json({
       status: "success",
@@ -184,26 +171,9 @@ const googleRedirect = async (req, res, next) => {
       user = await Users.createWithGoogle(userData.data.email);
     }
 
-    // const id = user._id;
-
-    // const payload = { id };
-
-    // const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "2h" });
-
     await userSessionsControl(user._id);
 
-    const newSession = await Sessions.create(user._id);
-
-    const payload = { userID: user._id, sessionID: newSession._id };
-
-    const refreshToken = jwt.sign(payload, SECRET_KEY, {
-      expiresIn: 60 * 60 * 24 * 30,
-    });
-    const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 30 });
-
-    await Sessions.updateToken(newSession._id, refreshToken);
-
-    // await Users.updateToken(id, token);
+    const { refreshToken, accessToken } = await createTokens(user._id);
 
     return res.redirect(
       `${process.env.FRONTEND_URL}/google-redirect?access=${accessToken}&token=${refreshToken}`
@@ -235,16 +205,7 @@ const updateTokens = async (req, res, next) => {
 
     await Sessions.remove(session._id);
 
-    const newSession = await Sessions.create(user._id);
-
-    const payload = { userID: user._id, sessionID: newSession._id };
-
-    const refreshToken = jwt.sign(payload, SECRET_KEY, {
-      expiresIn: 60 * 60 * 24 * 30,
-    });
-    const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: 60 * 30 });
-
-    await Sessions.updateToken(newSession._id, refreshToken);
+    const { refreshToken, accessToken } = await createTokens(user._id);
 
     return res.status(HttpCode.OK).json({
       status: "success",

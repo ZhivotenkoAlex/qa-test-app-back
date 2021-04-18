@@ -23,7 +23,7 @@ app.use(express.json({ limit: 10000 }));
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 100,
   handler: (req, res, next) => {
     return res.status(HttpCode.BAD_REQUEST).json({
       status: "error",
