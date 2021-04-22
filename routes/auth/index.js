@@ -6,6 +6,8 @@ const guard = require("../../helpers/guard");
 
 router.post("/register", register, authController.register);
 
+router.post("/verify", authController.verify);
+
 router.post("/login", login, authController.login);
 
 router.get("/google", authController.googleAuth);

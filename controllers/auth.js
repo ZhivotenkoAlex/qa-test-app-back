@@ -1,9 +1,11 @@
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const queryString = require("query-string");
+const { v4: uuid } = require("uuid");
 const Users = require("../model/users");
 const Sessions = require("../model/sessions");
 const { HttpCode } = require("../helpers/constants");
+const EmailService = require("../services/email");
 
 require("dotenv").config();
 const SECRET_KEY = process.env.JWT_SECRET;
@@ -46,7 +48,12 @@ const register = async (req, res, next) => {
       });
     }
 
-    const newUser = await Users.create(req.body);
+    const verificationToken = uuid();
+
+    const emailService = new EmailService();
+    await emailService.sendEmail(verificationToken, email);
+
+    const newUser = await Users.create({ ...req.body, verificationToken });
 
     const { refreshToken, accessToken } = await createTokens(newUser._id);
 
@@ -66,18 +73,49 @@ const register = async (req, res, next) => {
   }
 };
 
+const verify = async (req, res, next) => {
+  try {
+    const user = await Users.findByVerificationToken(
+      req.body.verificationToken
+    );
+
+    if (user) {
+      await Users.updateVerificationToken(user.id, null);
+
+      return res.status(HttpCode.OK).json({
+        status: "success",
+        code: HttpCode.OK,
+        message: "Verification successful",
+      });
+    }
+
+    return res.status(HttpCode.BAD_REQUEST).json({
+      status: "error",
+      code: HttpCode.BAD_REQUEST,
+      data: "Bad request",
+      message: "Link is not valid ",
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
     const user = await Users.findByEmail(email);
 
-    if (!user || !(await user.validPassword(password))) {
+    if (
+      !user ||
+      !(await user.validPassword(password)) ||
+      user.verificationToken
+    ) {
       return res.status(HttpCode.UNAUTHORIZED).json({
         status: "error",
         code: HttpCode.UNAUTHORIZED,
         data: "Unauthorized",
-        message: "Email or password is wrong",
+        message: "Invalid credentials",
       });
     }
 
@@ -222,6 +260,7 @@ const updateTokens = async (req, res, next) => {
 
 module.exports = {
   register,
+  verify,
   login,
   logout,
   googleAuth,
