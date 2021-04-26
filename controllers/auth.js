@@ -55,14 +55,10 @@ const register = async (req, res, next) => {
 
     const newUser = await Users.create({ ...req.body, verificationToken });
 
-    const { refreshToken, accessToken } = await createTokens(newUser._id);
-
     return res.status(HttpCode.CREATED).json({
       status: "success",
       code: HttpCode.CREATED,
       data: {
-        refreshToken,
-        accessToken,
         user: {
           email: newUser.email,
         },
