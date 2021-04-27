@@ -7,22 +7,6 @@ class EmailService {
   #sender = sgMail;
   #GenerateTemplate = Mailgen;
 
-  // constructor(env) {
-  //   switch (env) {
-  //     case "development":
-  //       this.link = process.env.FRONTEND_URL;
-  //       break;
-
-  //     case "production":
-  //       this.link = process.env.FRONTEND_URL_PROD;
-  //       break;
-
-  //     default:
-  //       this.link = process.env.FRONTEND_URL;
-  //       break;
-  //   }
-  // }
-
   #createTemplate(verificationToken) {
     const mailGenerator = new this.#GenerateTemplate({
       theme: "default",
