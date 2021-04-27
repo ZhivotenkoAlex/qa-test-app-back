@@ -19,6 +19,10 @@ const userSchema = new Schema(
     password: {
       type: String,
     },
+    verificationToken: {
+      type: String,
+      require: [true, "Verify token required"],
+    },
   },
   { versionKey: false, timestamps: true }
 );
